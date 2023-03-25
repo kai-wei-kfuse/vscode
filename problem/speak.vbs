@@ -1,0 +1,1 @@
+CreateObject("SAPI.Spvoice").speak("圆周率正确位数：小数点后2位")
