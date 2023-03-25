@@ -1,0 +1,1 @@
+Command failed: "c:/Users/kai_wei/OneDrive/文档/cpp/c++/202210/20221020/Tests/a.exe" 1 < "c:/Users/kai_wei/OneDrive/文档/cpp/c++/202210/20221020/Tests/input_1.txt" > "c:/Users/kai_wei/OneDrive/文档/cpp/c++/202210/20221020/Tests/code_output_1.txt"
