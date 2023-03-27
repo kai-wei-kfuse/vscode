@@ -3,6 +3,8 @@ using namespace std;
 
 // 2023.03.27
 // P3065
+//输出一个题解
+//https://www.luogu.com.cn/problem/P3065
 // 字典树
 
 const int N = 3e5 + 5;
@@ -68,7 +70,7 @@ int query(string s) {
             return 0;
         }
     }
-    return 1;
+    return 1;// 拓扑排序完毕 说明没有环
 }
 
 int main() {
@@ -80,7 +82,7 @@ int main() {
         insert(s[i]);
     }
     int ans = 0;
-    vector<int> res(n + 1);
+    vector<int> res(n + 1);//记录答案 
     for (int i = 1; i <= n; i++) {
         if (query(s[i])) {
             ans++;
