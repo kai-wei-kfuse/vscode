@@ -3,8 +3,8 @@ using namespace std;
 
 // 2023.03.27
 // P3065
-//输出一个题解
-//https://www.luogu.com.cn/problem/P3065
+// 输出一个题解
+// https://www.luogu.com.cn/problem/P3065
 // 字典树
 
 const int N = 3e5 + 5;
@@ -38,11 +38,11 @@ int query(string s) {
         for (int j = 0; j < 26; j++) {
             if (tr[p].son[j] && j != u) {  // 有边 p->j 且 j != u   且 j != u 说明 s[i] 与同一层的其他字母不同
                 edg[u].push_back(j);       // 建图 u -> j u是s[i] j是同一层的其他字母
-               // cout << u << " " << j << endl;
-                ins[j]++;  // 入度 + 1
+                                           // cout << u << " " << j << endl;
+                ins[j]++;                  // 入度 + 1
             }
         }
-        if (tr[p].tag ) {  // 如果 p 是单词结尾 则说明有单词前缀与 s 相同
+        if (tr[p].tag) {  // 如果 p 是单词结尾 则说明有单词前缀与 s 相同
             return 0;
         }
         p = tr[p].son[u];  // 向下走
@@ -70,7 +70,7 @@ int query(string s) {
             return 0;
         }
     }
-    return 1;// 拓扑排序完毕 说明没有环
+    return 1;  // 拓扑排序完毕 说明没有环
 }
 
 int main() {
@@ -82,17 +82,15 @@ int main() {
         insert(s[i]);
     }
     int ans = 0;
-    vector<int> res(n + 1);//记录答案 
+    vector<int> res(n + 1);  // 记录答案
     for (int i = 1; i <= n; i++) {
         if (query(s[i])) {
             ans++;
             res[i] = 1;
         }
     }
-    cout << ans << endl;
-    for (int i = 1; i <= n; i++) {
-        if (res[i]) {
+    for (int i = 1; i <= n; i++)
+        if (res[i])
             cout << s[i] << endl;
-        }
-    }
+    cout << ans << endl;
 }
