@@ -1,122 +1,84 @@
 #include <bits/stdc++.h>
-#define int long long
 using namespace std;
-const int N = 1e6 + 100;
-const int mod = 1e9 + 7;
-int has1[N];
-int has2[N];
-char s[N];
-int p1[N];
-int p2[N];
-map<pair<int, int>, int> mp;
-struct Palindromic_Tree {
-    int trie[N][26];
-    // trie指针，trie指针和字典树类似，指向的回文子串为i节点对应的回文子串两端加上同一个字符ch构成
-    int fail[N];
-    // fail指针，失配后跳转到fail指针指向的节点，fail指针指向的是i节点对应的回文子串的最长后缀回文子串（是真后缀），这个匹配过程与kmp有点类似，fail[i]表示节点i失配以后跳转到长度小于该串且以该节点表示回文串的最后一个字符结尾的最长回文串表示的节点
-    int cnt[N];
-    // 在调用count函数之后，cnt[i]表示i节点对应的回文子串的出现次数的准确值
-    int num[N];
-    // 在调用add函数之后返回num[last]可以得到以i位置的字符为尾的回文串个数
-    int len[N];  // len[i]表示节点i表示的回文串的长度
-    int S[N];    // 存放添加的字符,
-    int last;    // 指向上一个字符所在的节点，方便下一次add
-    int n;       // 字符数组指针，从1开始，到n结束
-    int p;  // 节点指针，0指向偶根，1指向奇根，有效编号到p-1
-    int newnode(int l) {  // 新建节点
-        for (int i = 0; i < 26; ++i)
-            trie[p][i] = 0;
-        cnt[p] = 0;
-        num[p] = 0;
-        len[p] = l;
-        fail[p] = 0;
-        return p++;
+const int maxn = 1000010;
+int tr[maxn][26];  //字典树
+int idx = 0;       //字典树节点编号
+int cnt[maxn];     //字典树标记数组
+int fail[maxn];    //失配指针（next数组）
+int id[maxn];      //统计数组
+vector<int> v;     //拓扑排序结果
+
+void insert(string s, int x) {  //构建字典树（基本操作），标记数组id[]、cnt[]每种情况含义不同，按需使用
+    int p = 0;
+    for (int i = 0; i < s.size(); i++) {
+        int tmp = s[i] - 'a';
+        if (!tr[p][tmp])
+            tr[p][tmp] = ++idx;
+        p = tr[p][tmp];
+        // cnt[p]++;
     }
-    void init() {
-        p = 0;
-        newnode(0);
-        newnode(-1);
-        last = 0;
-        n = 0;
-        S[n] = -1;  // 开头放一个字符集中没有的字符，减少特判
-        fail[0] = 1;
-    }
-    int get_fail(int x)  // 和KMP一样，失配后找一个尽量最长的
-    {
-        while (S[n - len[x] - 1] != S[n])
-            x = fail[x];
-        return x;
-    }
-    void add(int c) {
-        c -= 'a';
-        S[++n] = c;
-        int cur = get_fail(last);  // 通过上一个回文串找这个回文串的匹配位置
-        if (!trie[cur][c])
-        // 如果这个回文串没有出现过，说明出现了一个新的本质不同的回文串
-        {
-            int now = newnode(len[cur] + 2);  // 新建节点
-            fail[now] = trie[get_fail(fail[cur])][c];
-            // 和AC自动机一样建立fail指针，以便失配后跳转
-            trie[cur][c] = now;
-            num[now] = num[fail[now]] + 1;
-        }
-        last = trie[cur][c];
-        cnt[last]++;
-    }
-    void get_cnt() {
-        for (int i = p - 1; i >= 0; --i)
-            cnt[fail[i]] += cnt[i];
-    }
-} pt;
-int ans, k;
-void DFS(int x, int len) {
+    // cnt[p]++;//在这里的cnt数组是为了标记结尾相同的串的个数
+    id[x] = p;  //记录这个串末尾的节点
+}
+void build() {  //构建AC自动机
+    queue<int> q;
     for (int i = 0; i < 26; i++) {
-        if (pt.trie[x][i] == 0)
-            continue;
-        if (x == 1) {
-            has1[pt.trie[x][i]] = (i + 1) % mod;
-            has2[pt.trie[x][i]] = (i + 1) % mod;
-            mp[{has1[pt.trie[x][i]], has2[pt.trie[x][i]]}]++;
-            if (mp[{has1[pt.trie[x][i]], has2[pt.trie[x][i]]}] == k)
-                ans++;
-            DFS(pt.trie[x][i], len + 1);
-        } else {
-            has1[pt.trie[x][i]] = (has1[x] * 131 % mod + (i + 1) % mod +
-                                   (i + 1) * p1[len + 1] % mod) %
-                                  mod;
-            has2[pt.trie[x][i]] = (has2[x] * 13331 % mod + (i + 1) % mod +
-                                   (i + 1) * p2[len + 1] % mod) %
-                                  mod;
-            mp[{has1[pt.trie[x][i]], has2[pt.trie[x][i]]}]++;
-            if (mp[{has1[pt.trie[x][i]], has2[pt.trie[x][i]]}] == k)
-                ans++;
-            DFS(pt.trie[x][i], len + 2);
+        if (tr[0][i])
+            q.push(tr[0][i]);  //把第一层插入队列
+    }
+    while (!q.empty()) {
+        int tmp = q.front();
+        v.push_back(tmp);
+        q.pop();
+        for (int i = 0; i < 26; i++) {
+            int p = tr[tmp][i];
+            if (!p)
+                tr[tmp][i] = tr[fail[tmp]][i];
+            //如果不存在这个节点，就使他直接变成失配指针指向的节点(*)
+            else {
+                fail[p] = tr[fail[tmp]][i];
+                //如果存在就更新失配指针，指向父节点的失配指针指向的节点的同一个字母，如果不存在，则继续往上跳
+                //往上跳的操作由 不存在时更新节点(*) 来保证
+                q.push(p);  //存在就放入队列，不存在就不放
+            }
         }
     }
 }
-signed main() {
-    cin.tie(0);
-    cout.tie(0);
-    ios::sync_with_stdio(0);
-    p1[0] = p2[0] = 1;
-    for (int i = 1; i < N; i++) {
-        p1[i] = 131 * p1[i - 1] % mod;
-        p2[i] = 13331 * p2[i - 1] % mod;
+
+int main() {
+    int n;
+    cin >> n;
+    vector<string> str;
+    for (int i = 1; i <= n; i++) {
+        string s;
+        cin >> s;
+        str.push_back(s);
+        insert(s, i);
     }
-    cin >> k;
-    for (int i = 1; i <= k; i++) {
-        pt.init();
-        cin >> (s + 1);
-        int len = strlen(s + 1);
-        for (int i = 1; i <= len; i++)
-            pt.add(s[i] - 'a');
-        DFS(1, 0);
-        DFS(0, 0);
-        for (int i = 0; i <= pt.p + 1; i++) {
-            has1[i] = 0;
-            has2[i] = 0;
-        }
+    build();
+    string a;
+    cin >> a;
+    int len = a.length();
+    int maxn = 0;
+    int p = 0;
+    for (int i = 0; i < len; i++) {//录入文本串
+        int tmp = a[i] - 'a';
+        p = tr[p][tmp];
+        cnt[p]++;
     }
-    cout << ans << endl;
-    return 0;
+    len = v.size();
+    for (int i = len - 1; i >= 0; i--) {
+        cnt[fail[v[i]]] += cnt[v[i]];
+    }
+    for (int i = 1; i <= n; i++) {
+        cout << cnt[id[i]] << endl;
+        // maxn = max(maxn, cnt[i]);
+    }
+    // cout << maxn << endl;
+    // for (int i = 1; i <= idx;i++){
+    //     if(cnt[i]==maxn){
+    //         cout << str[id[i]] << endl;
+    //     }
+    // }
+    // cout << res << endl;
 }

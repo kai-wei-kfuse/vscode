@@ -4,7 +4,7 @@ using namespace std;
 const int N = 5e5 + 10;
 char s[N];
 int n, lst, len[N];
-int now, tot = 1, fail[N], cnt[N], t[N][26];
+int now, idx = 1, fail[N], cnt[N], t[N][26];
 // tot 记得赋成 1，已经有两个根节点了
 
 int getfail(int u, int p) {  // 求 u 的fail指针 ，p表示当前插入的是哪个点
@@ -18,12 +18,12 @@ int insert(char c, int id) {
     int p = getfail(now, id);  // 找到那条路中有 id 位都一样的最长回文子串
     // 这个点就是他爸爸
     if (!t[p][c - 'a']) {  // 爸爸没它这个儿子，新认一个
-        fail[++tot] = t[getfail(fail[p], id)][c - 'a'];
+        fail[++idx] = t[getfail(fail[p], id)][c - 'a'];
         // fail等于((((爸爸的fail那条路上)有 id
         // 位都是一样的回文串)的节点)的同名儿子)
-        t[p][c - 'a'] = tot;    // 跟trie树一样
-        len[tot] = len[p] + 2;  // 长度等于爸爸+2
-        cnt[tot] = cnt[fail[tot]] + 1;  // 回文串数量等于fail的数量加上它自己
+        t[p][c - 'a'] = idx;    // 跟trie树一样
+        len[idx] = len[p] + 2;  // 长度等于爸爸+2
+        cnt[idx] = cnt[fail[idx]] + 1;  // 回文串数量等于fail的数量加上它自己
     }
     return cnt[now = t[p][c - 'a']];  // 更新它现在的位置，并返回cnt作为答案
 }

@@ -18,24 +18,19 @@ struct Palindromic_Tree {
     // 在调用count函数之后，cnt[i]表示i节点对应的回文子串的出现次数的准确值
     int num[N];
     // 在调用add函数之后返回num[last]可以得到以i位置的字符为尾的回文串个数
-    int len[N];  // len[i]表示节点i表示的回文串的长度
-    int S[N];    // 存放添加的字符,
-    int last;    // 指向上一个字符所在的节点，方便下一次add
-    int n;       // 字符数组指针，从1开始，到n结束
-    int p;  // 节点指针，0指向偶根，1指向奇根，有效编号到p-1
+    int len[N];           // len[i]表示节点i表示的回文串的长度
+    int S[N];             // 存放添加的字符,
+    int last;             // 指向上一个字符所在的节点，方便下一次add
+    int n;                // 字符数组指针，从1开始，到n结束
+    int idx;              // 节点指针，0指向偶根，1指向奇根，有效编号到p-1
     int newnode(int l) {  // 新建节点
+        cnt[idx] = 0, num[idx] = 0, len[idx] = l, fail[idx] = 0;
         for (int i = 0; i < 26; ++i)
-            trie[p][i] = 0;
-        cnt[p] = 0;
-        num[p] = 0;
-        len[p] = l;
-        fail[p] = 0;
-        return p++;
+            trie[idx][i] = 0;
+        return idx++;
     }
     void init() {
-        p = 0;
-        newnode(0);
-        newnode(-1);
+        idx = 0, newnode(0), newnode(-1);
         last = 0;
         n = 0;
         S[n] = -1;  // 开头放一个字符集中没有的字符，减少特判
@@ -54,9 +49,8 @@ struct Palindromic_Tree {
         if (!trie[cur][c])
         // 如果这个回文串没有出现过，说明出现了一个新的本质不同的回文串
         {
-            int now = newnode(len[cur] + 2);  // 新建节点
-            fail[now] = trie[get_fail(fail[cur])][c];
-            // 和AC自动机一样建立fail指针，以便失配后跳转
+            int now = newnode(len[cur] + 2);           // 新建节点
+            fail[now] = trie[get_fail(fail[cur])][c];  // 和AC自动机一样建立fail指针，以便失配后跳转
             trie[cur][c] = now;
             num[now] = num[fail[now]] + 1;
         }
@@ -64,7 +58,7 @@ struct Palindromic_Tree {
         cnt[last]++;
     }
     void get_cnt() {
-        for (int i = p - 1; i >= 0; --i)
+        for (int i = idx - 1; i >= 0; --i)
             cnt[fail[i]] += cnt[i];
     }
 } pt;
@@ -112,7 +106,7 @@ signed main() {
             pt.add(s[i] - 'a');
         DFS(1, 0);
         DFS(0, 0);
-        for (int i = 0; i <= pt.p + 1; i++) {
+        for (int i = 0; i <= pt.idx + 1; i++) {
             has1[i] = 0;
             has2[i] = 0;
         }

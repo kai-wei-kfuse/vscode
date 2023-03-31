@@ -1,10 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 const long long mod = 1e9 + 7;
-const int MAXN = 100025;
+const int N = 100025;
 const int MAXK = 15;
 int n, m, q, k;
-long long l, r, a[MAXN], ki[MAXK], coef1[MAXK], coef2[MAXK];
+long long l, r, a[N], ki[MAXK], coef1[MAXK], coef2[MAXK];
 void P(long long a[], int len, int cnt = 1) {
     while (cnt--) {
         for (int i = 1; i <= len; ++i) {

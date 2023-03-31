@@ -3,7 +3,7 @@ using namespace std;
 
 const int N = 1005;
 
-struct node {  // 回文树节点 用于存储回文串的信息
+struct node {
     int next[26];
     int len;
     int sufflink;
@@ -13,13 +13,13 @@ struct node {  // 回文树节点 用于存储回文串的信息
 int len;
 char s[N];
 node tree[N];
-int num;   //  当前节点个数
-int suff;  // 当前回文串的最长回文后缀
+int num;   // node 1 - root with len -1, node 2 - root with len 0
+int suff;  // max suffix palindrome
 long long ans;
 
 bool addLetter(int pos) {
-    int cur = suff, curlen = 0;  // 当前节点，当前节点的长度
-    int let = s[pos] - 'a';      // 当前字符
+    int cur = suff, curlen = 0;
+    int let = s[pos] - 'a';
 
     while (true) {
         curlen = tree[cur].len;

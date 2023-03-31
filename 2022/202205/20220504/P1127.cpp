@@ -7,7 +7,7 @@ int in[27], out[27], vis[27], parent[27], vis2[27];
 
 string s[27], ans[27];
 vector<int> mp[30];
-int n, tot;
+int n, idx;
 int over() {
     cout << "***";
     return 0;
@@ -53,7 +53,7 @@ void dfs(int x, int num) {
         if (vis2[i] == 0 && s[i][0] - 'a' == x) {
             vis2[i] = 1;
             dfs(s[i][s[i].length() - 1] - 'a', num + 1);
-            ans[++tot] = s[i];
+            ans[++idx] = s[i];
         }
     }
 }
@@ -108,7 +108,7 @@ int main() {
                 dfs(i, 0);
         }
     }
-    for (int i = tot; i >= 1; i--) {
+    for (int i = idx; i >= 1; i--) {
         cout << ans[i];
         if (i > 1)
             cout << '.';

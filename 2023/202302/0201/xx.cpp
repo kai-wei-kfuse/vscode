@@ -4,10 +4,10 @@
 #include <iostream>
 #include <map>
 using namespace std;
-const int MAXN = 200000;
+const int N = 200000;
 
-int next_[MAXN];
-int extend[MAXN];
+int next_[N];
+int extend[N];
 
 void EKMP(char s[], char t[])  // s[]为主串，t[]为模式串
 {
@@ -59,7 +59,7 @@ void EKMP(char s[], char t[])  // s[]为主串，t[]为模式串
     }
 }
 
-char s[MAXN], tab[MAXN], c[MAXN];
+char s[N], tab[N], c[N];
 map<char, char> map1;
 
 int main() {
