@@ -93,21 +93,12 @@ int main() {
 
     int ans = 0;
     for (int i = 0; i < sa_.n;) {
-        int maxn = 0;
-        int idx = 0;
-        int k = 1;
-        for (k = 1; k <= d; k++) {
-            if (i + k - 1 >= sa_.n) break;
-            cout << i << " " << k << " " << sa_.lcp(i, i + k) << endl;
-            if (maxn + idx < k + sa_.lcp(i, i + k)) {
-                idx = k;
-                maxn = sa_.lcp(i, i + k);
-            }
-            // cout<<"?"<<maxn<<" "<<idx<<endl;
+        int maxn = d;                                    // 前串长度
+        for (int k = 1; k <= d && i + k < sa_.n; k++) {  // 枚举前串长度
+            maxn = max(maxn, k + sa_.lcp(i, i + k));  // 更新最大长度
         }
-        cout << maxn << " " << i << "|" << idx << endl;
         ans++;
-        i += idx + maxn;
+        i += maxn;
     }
     cout << ans << endl;
 }
