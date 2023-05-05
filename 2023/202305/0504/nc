@@ -1,0 +1,71 @@
+#include <bits/stdc++.h>
+using namespace std;
+using i64 = long long;
+
+struct Hash {
+    const i64 mod = 1E12 + 39;
+    const int P = 13331;
+    vector<i64> h, p;
+    Hash(string s) : h(s.size() + 1), p(s.size() + 1) {
+        int n = s.size();
+        p[0] = 1;
+        for (int i = 0; i < n; i++) {
+            h[i + 1] = (h[i] * P + s[i]) % mod;
+            p[i + 1] = p[i] * P % mod;
+        }
+    };
+
+    i64 get(int l, int r) {
+        return (h[r] + __int128(h[l]) * (P - p[r - l])) % P;
+    };
+};
+
+constexpr int inf = 1e9;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin >> n;
+    unordered_set<i64> st[2];
+    for (int i = 0; i < n; i++) {
+        string s;
+        cin >> s;
+        Hash hs(s);
+        st[0].insert(hs.get(0, s.size()));
+    }
+    int m;
+    cin >> m;
+    for (int i = 0; i < m; i++) {
+        string s;
+        cin >> s;
+        Hash hs(s);
+        st[1].insert(hs.get(0, s.size()));
+    }
+
+    string s;
+    cin >> s;
+    Hash hs(s);
+    vector<array<int, 2>> dp(s.size() + 1, {inf, inf});
+    dp[0] = {0, 0};
+    for (int i = 0; i < s.size(); i++) {
+        for (int j = 0; j <= i; j++) {
+            i64 now = hs.get(j, i + 1);
+            for (int k = 0; k < 2; k++) {
+                if (st[k].count(now)) {
+                    dp[i + 1][k] = min(dp[i + 1][k], dp[j][k ^ 1] + 1);
+                }
+            }
+        }
+    }
+
+    int ans = min(dp[s.size()][0], dp[s.size()][1]);
+    if (ans == inf) {
+        cout << "-1\n";
+    } else {
+        cout << ans << '\n';
+    }
+
+    return 0;
+}
